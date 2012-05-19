@@ -1,0 +1,97 @@
+<!DOCTYPE html><!--HTML5 doctype-->
+<html>
+<head>
+<title>Pap Mac</title>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<style type="text/css">
+    *  { -webkit-user-select:none; -webkit-tap-highlight-color:rgba(255, 255, 255, 0); }
+    input, textarea  { -webkit-user-select:text; }
+    body {
+        background-color:#fff;
+        color:#000;
+        font-family:Arial;
+        font-size:48pt;
+        margin:0px;padding:0px;
+        background-image:url('images/background.jpg');
+    }
+</style>
+<script type="text/javascript" charset="utf-8" src="http://localhost:58888/_appMobi/appmobi.js"></script>
+<script type="text/javascript" charset="utf-8" src="http://localhost:58888/_appMobi/xhr.js"></script>
+<script type="text/javascript" charset="utf-8" src="./ui/jq.ui.min.js"></script>
+<script type="text/javascript">
+/* This function runs once the page is loaded, but appMobi is not yet active */
+var init = function(){
+
+};
+window.addEventListener("load",init,false);
+
+/* This code prevents users from dragging the page */
+var preventDefaultScroll = function(event) {
+    event.preventDefault();
+    window.scroll(0,0);
+    return false;
+};
+document.addEventListener('touchmove', preventDefaultScroll, false);
+
+/* This code is used to run as soon as appMobi activates */
+var onDeviceReady=function(){
+    //Size the display to 768px by 1024px
+    AppMobi.display.useViewport(768,1024);
+
+	//hide splash screen
+	AppMobi.device.hideSplashScreen();
+};
+document.addEventListener("appMobi.device.ready",onDeviceReady,false);
+
+var snaped = function(){
+    $("#sandbox").text("snapeed");
+}
+
+
+document.addEventListener("appMobi.camera.picture.add",onSuccess);
+document.addEventListener("appMobi.camera.picture.busy",onSuccess);
+document.addEventListener("appMobi.camera.picture.cancel",onSuccess);
+
+function capturePhoto() {
+    AppMobi.camera.takePicture(50,false,"jpg");
+}
+
+function onSuccess(evt) {
+
+    if (evt.success == true)
+    {
+        // create image
+        var image = document.createElement('img');
+        image.src=AppMobi.camera.getPictureURL(evt.filename);
+        image.id=evt.filename;
+        document.body.appendChild(image);
+    }
+    else
+    {
+        if (evt.message != undefined)
+        {
+            alert(evt.message);
+        }
+        else
+        {
+            alert("error capturing picture");
+        }
+    }
+}
+    
+
+</script>
+
+</head>
+
+<body>
+
+hello world
+
+<input type="button" value="Get Geolocation Data" onclick="snaped();">
+
+<div id="sandbox"> test </div>
+
+</body>
+
+</html>
