@@ -48,6 +48,11 @@ var snaped = function(){
 }
 
 
+
+
+
+
+
 document.addEventListener("appMobi.camera.picture.add",onSuccess);
 document.addEventListener("appMobi.camera.picture.busy",onSuccess);
 document.addEventListener("appMobi.camera.picture.cancel",onSuccess);
@@ -64,6 +69,20 @@ function onSuccess(evt) {
         var image = document.createElement('img');
         image.src=AppMobi.camera.getPictureURL(evt.filename);
         image.id=evt.filename;
+
+
+
+
+//        http://api123.photobucket.com/album/pbapi/upload
+
+
+        var pictureURL=image.id;
+
+        AppMobi.file.uploadToServer(pictureURL,"http://www.yourserver.com/uploadImage.php", "", "image/jpeg", "updateUploadProgress");
+
+
+
+
         document.body.appendChild(image);
     }
     else
@@ -78,7 +97,48 @@ function onSuccess(evt) {
         }
     }
 }
-    
+
+
+
+function updateUploadProgress(bytesSent,totalBytes)
+{
+    if(totalBytes>0)
+        currentProgress=(bytesSent/totalBytes)*100;
+    document.getElementById("progress").innerHTML=currentProgress+"%";
+}
+
+document.addEventListener("appMobi.file.upload.busy",uploadBusy);
+document.addEventListener("appMobi.file.upload",uploadComplete);
+document.addEventListener("appMobi.file.upload.cancel",uploadCancelled);
+
+function uploadBusy(evt)
+{
+    alert("Sorry, a file is already being uploaded");
+}
+
+function uploadComplete(evt)
+{
+    if(evt.success==true)
+    {
+        alert("File "+evt.localURL+" was uploaded");
+    }
+    else {
+        alert("Error uploading file "+evt.message);
+    }
+}
+
+function uploadCancelled(evt)
+{
+    alert("File upload was cancelled "+evt.localURL);
+}
+
+
+
+
+
+
+
+
 
 </script>
 
@@ -89,7 +149,9 @@ function onSuccess(evt) {
 hello world
 
 <input type="button" value="Get Geolocation Data" onclick="snaped();">
+<input type="button" value="Get Geolocation Data" onclick="capturePhoto();">
 
+<div id="progress"></div>
 <div id="sandbox"> test </div>
 
 </body>
