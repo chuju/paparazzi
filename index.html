@@ -76,10 +76,11 @@ function onSuccess(evt) {
 //        http://api123.photobucket.com/album/pbapi/upload
 
 
-        var pictureURL=image.id;
+        var pictureURL=image.src;
 
-        AppMobi.file.uploadToServer(pictureURL,"http://www.yourserver.com/uploadImage.php", "", "image/jpeg", "updateUploadProgress");
+        AppMobi.file.uploadToServer(pictureURL,"http://0.0.0.0:3000/photo_upload", "", "image/jpeg", "updateUploadProgress");
 
+        getLocation(evt.filename);
 
 
 
@@ -102,9 +103,10 @@ function onSuccess(evt) {
 
 function updateUploadProgress(bytesSent,totalBytes)
 {
-    if(totalBytes>0)
-        currentProgress=(bytesSent/totalBytes)*100;
-    document.getElementById("progress").innerHTML=currentProgress+"%";
+
+//    if(totalBytes>0)
+//        currentProgress=(bytesSent/totalBytes)*100;
+//    document.getElementById("progress").innerHTML=currentProgress+"%";
 }
 
 document.addEventListener("appMobi.file.upload.busy",uploadBusy);
@@ -132,13 +134,39 @@ function uploadCancelled(evt)
     alert("File upload was cancelled "+evt.localURL);
 }
 
+var getLocation = function(photoAtLocation)
+{
+    var suc = function(p){
+//        alert("geolocation success");
+        if (p.coords.latitude != undefined)
+        {
+            currentLatitude = p.coords.latitude;
+            currentLongitude = p.coords.longitude;
 
+            $.ajax({
+                type: 'POST',
+                url: 'http://0.0.0.0:3000/location_and_photo_store',
+                crossDomain: true,
+                data: '{"latitude":"' + currentLatitude + '", "longitude": "' + currentLongitude +'", "photo_url": "' + photoAtLocation + '"}',
+                dataType: 'json',
+                success: function(responseData, textStatus, jqXHR) {
+                    var value = responseData.someKey;
+                },
+                error: function (responseData, textStatus, errorThrown) {
+                    alert('POST failed.');
+                }
+            });
+        }
 
+    };
+    var fail = function(){
+        alert("geolocation failed");
+        getLocation();
+    };
 
+    AppMobi.geolocation.getCurrentPosition(suc,fail);
 
-
-
-
+}
 
 </script>
 
@@ -148,11 +176,13 @@ function uploadCancelled(evt)
 
 hello world
 
-<input type="button" value="Get Geolocation Data" onclick="snaped();">
 <input type="button" value="Get Geolocation Data" onclick="capturePhoto();">
+<input type="button" value="check lets see the map" onclick="window.location.href='http://www.google.com';">
 
 <div id="progress"></div>
 <div id="sandbox"> test </div>
+
+<iframe height="600" width="600" src="http://www.w3schools.com"></iframe>
 
 </body>
 
